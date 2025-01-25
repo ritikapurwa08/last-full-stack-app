@@ -8,6 +8,7 @@ import Navbar from "@/features/users/components/navbar";
 import { Roboto } from "next/font/google";
 import { Fira_Code } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -57,6 +58,7 @@ export default function RootLayout({
             <ThemeProvider attribute="class" defaultTheme="dark">
               <Navbar />
               {children}
+              <Toaster />
             </ThemeProvider>
           </ConvexClientProvider>
         </body>

@@ -92,8 +92,11 @@ export default defineSchema({
     content: v.string(),
     customImage: v.optional(v.string()),
     uploadedImage: v.optional(v.string()),
-    uploadedImageStorageId: v.optional(v.string()),
+    uploadedImageStorageId: v.optional(v.id("_storage")),
     updatedAt: v.optional(v.number()),
+    likes: v.optional(v.array(v.id("users"))),
+    saved: v.optional(v.array(v.id("users"))),
+    comments: v.optional(v.array(v.id("comments"))),
     likesCount: v.number(),
     commentsCount: v.number(),
     savedCount: v.number(),
@@ -107,6 +110,9 @@ export default defineSchema({
   blogInteractions: defineTable({
     userId: v.id("users"),
     blogId: v.id("blogs"),
+    likes: v.array(v.id("users")),
+    saved: v.array(v.id("users")),
+
     type: v.string(), // "save" or "like"
     createdAt: v.number(),
   })
@@ -119,11 +125,12 @@ export default defineSchema({
     blogId: v.id("blogs"),
     userId: v.id("users"),
     content: v.string(),
-    createdAt: v.number(),
     updatedAt: v.optional(v.number()),
     parentCommentId: v.optional(v.id("comments")), // For nested comments
-    likesCount: v.number(),
-    isEdited: v.boolean(),
+    commentLikes: v.optional(v.array(v.id("users"))),
+    commentLikesCount: v.number(),
+
+    isCommentEdited: v.boolean(),
   })
     .index("by_blogId", ["blogId"])
     .index("by_userId", ["userId"])

@@ -1,4 +1,4 @@
-import { LucideIcon, UserIcon } from "lucide-react";
+import { LucideIcon, TestTube2Icon, UserIcon } from "lucide-react";
 import { IconType } from "react-icons";
 import { GrAnnounce } from "react-icons/gr";
 import { TbRegistered, TbSmartHome } from "react-icons/tb";
@@ -25,8 +25,8 @@ export const NavigationLinks: NavLinksType[] = [
     icon: GrAnnounce,
   },
   {
-    label: "Register",
-    href: "/auth",
-    icon: TbRegistered,
+    label: "Test",
+    href: "/test",
+    icon: TestTube2Icon,
   },
 ];
