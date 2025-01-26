@@ -26,6 +26,18 @@ export default defineSchema({
     showEmail: v.optional(v.boolean()),
     showInstagram: v.optional(v.boolean()),
     showWebsite: v.optional(v.boolean()),
+    showFollowers: v.optional(v.boolean()),
+    showFollowing: v.optional(v.boolean()),
+    showPosts: v.optional(v.boolean()),
+    showSavedPosts: v.optional(v.boolean()),
+    showLikedPosts: v.optional(v.boolean()),
+    showLocation: v.optional(v.boolean()),
+    showBio: v.optional(v.boolean()),
+    showJoinedAt: v.optional(v.boolean()),
+    showLastActive: v.optional(v.boolean()),
+    messagePrivacy: v.optional(
+      v.union(v.literal("everyone"), v.literal("followers"), v.literal("none"))
+    ),
   })
     .index("by_email", ["email"])
     .index("by_name", ["name"])
@@ -44,18 +56,7 @@ export default defineSchema({
     totalMessages: v.number(),
     unreadMessages: v.number(),
     lastActive: v.string(),
-  })
-    .index("by_userId", ["userId"])
-    .index("by_followingUser", ["followedUser"])
-    .index("by_followedUser", ["followedUser"])
-    .index("by_followersCount", ["followersCount"])
-    .index("by_followingCount", ["followingCount"])
-    .index("by_postsCount", ["postsCount"])
-    .index("by_savedPostsCount", ["savedPostsCount"])
-    .index("by_likedPostsCount", ["likedPostsCount"])
-    .index("by_totalMessages", ["totalMessages"])
-    .index("by_unreadMessages", ["unreadMessages"])
-    .index("by_lastActive", ["lastActive"]),
+  }).index("by_userId", ["userId"]),
 
   // User preferences
   userPreferences: defineTable({
