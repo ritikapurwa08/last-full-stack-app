@@ -15,12 +15,14 @@ import { api } from "../../../../convex/_generated/api";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import { LoaderIcon, MenuIcon } from "lucide-react";
+import { LoaderIcon, MenuIcon, TestTube2Icon, UserIcon } from "lucide-react";
 import { motion, useScroll } from "framer-motion";
 import Image from "next/image";
 import { LuLogOut } from "react-icons/lu";
 import { cn } from "@/lib/utils";
-import { NavigationLinks, NavLinksType } from "../constant";
+import { NavLinksType } from "../constant";
+import { TbSmartHome } from "react-icons/tb";
+import { GrAnnounce } from "react-icons/gr";
 
 const Navbar = () => {
   const currentUser = useQuery(api.users.getCurrentUser);
@@ -34,6 +36,28 @@ const Navbar = () => {
   const { scrollY } = useScroll();
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
+  const NavigationLinks: NavLinksType[] = [
+    {
+      label: "Home",
+      href: "/",
+      icon: TbSmartHome,
+    },
+    {
+      label: "Profile",
+      href: `/profile/${currentUser?._id}`,
+      icon: UserIcon,
+    },
+    {
+      label: "Blogs",
+      href: "/blogs",
+      icon: GrAnnounce,
+    },
+    {
+      label: "Test",
+      href: "/test",
+      icon: TestTube2Icon,
+    },
+  ];
 
   useEffect(() => {
     return scrollY.on("change", (latest) => {

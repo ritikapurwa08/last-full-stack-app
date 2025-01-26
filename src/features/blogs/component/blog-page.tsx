@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Doc } from "../../../../convex/_generated/dataModel";
+import { Doc, Id } from "../../../../convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
 import { useGetAllPaginatedBlogs } from "../queries/blog-query-hooks";
 import Image from "next/image";
@@ -21,17 +21,24 @@ import {
   UpdateBlogDialog,
 } from "./blog-mutation-comps";
 import { format } from "date-fns";
+import { useRouter } from "next/navigation";
 
 type Blog = Doc<"blogs">;
 
 const BlogCard = ({ blog }: { blog: Blog }) => {
   const formattedDate = format(new Date(blog._creationTime), "MMMM do, yyyy");
-
+  const router = useRouter();
+  const handleUserProfile = (path: Id<"users">) => {
+    router.push(`/profile/${path}`);
+  };
   return (
     <Card className="overflow-hidden min-w-full transition-all hover:shadow-lg">
       {/* User Profile and Name */}
       <div className="flex items-center p-4 border-b">
-        <div className="w-10 h-10 rounded-full overflow-hidden">
+        <div
+          onClick={() => handleUserProfile(blog.userId)}
+          className="w-10 h-10 rounded-full overflow-hidden"
+        >
           {blog.customImage && (
             <Image
               src={blog.customImage}

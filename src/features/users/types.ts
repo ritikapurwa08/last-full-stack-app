@@ -13,6 +13,7 @@ const SignUpZodSchema = z
         /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
         "Please enter a valid email address."
       ),
+    customImage: z.string(),
     password: z
       .string()
       .min(1, { message: "Password is required." })
@@ -50,6 +51,8 @@ export const UseSignUpZodForm = () => {
       name: "",
       email: "",
       password: "",
+      customImage:
+        "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?q=80&w=1972&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
   });
 

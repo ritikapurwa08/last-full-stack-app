@@ -1,12 +1,11 @@
-import UserProfile from "@/features/users/components/profile-page";
 import React from "react";
 
-const ProfilePage = () => {
+const page = () => {
   return (
     <div>
-      <UserProfile />
+      <h1>I am simple profile page</h1>
     </div>
   );
 };
 
-export default ProfilePage;
+export default page;

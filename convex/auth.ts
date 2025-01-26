@@ -7,6 +7,7 @@ export const CustomPassword = Password<DataModel>({
     return {
       name: params.name as string,
       email: params.email as string,
+      customImage: params.customImage as string,
     };
   },
 });

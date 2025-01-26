@@ -23,7 +23,7 @@ import {
 import { cn } from "@/lib/utils";
 import Image, { StaticImageData } from "next/image";
 import { Input } from "@/components/ui/input";
-import { useCheckEmail } from "../users/user-query-hooks";
+import { useCheckEmail } from "../users/query/user-query-hooks";
 
 interface CustomEmailInputProps<T extends FieldValues> {
   control: Control<T>;

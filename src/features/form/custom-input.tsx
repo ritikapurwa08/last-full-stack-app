@@ -54,36 +54,46 @@ export default function CustomInput<T extends FieldValues>({
   } = useController({ name, control, defaultValue });
 
   return (
-    <FormItem className="relative flex flex-col gap-y-0.5">
-      <div className="relative">
-        <FormControl className="m-0 p-0">
-          <div className="relative">
+    <FormItem className="relative flex  flex-col gap-y-0.5">
+      <div className="relative group">
+        <FormControl>
+          <div className="relative flex items-center">
             {Icon && (
-              <div className="absolute flex justify-center items-center top-1/2 transform -translate-y-1/2 w-10">
-                <Icon size={24} className={cn(iconClassName)} />
+              <div className="absolute left-3 text-gray-400 group-hover:text-primary transition-colors duration-200">
+                <Icon
+                  size={20}
+                  className={cn(
+                    "transition-transform duration-200 group-hover:scale-110",
+                    iconClassName
+                  )}
+                />
               </div>
             )}
             {iconSrc && (
-              <div className="absolute top-1/2 transform -translate-y-1/2">
+              <div className="absolute left-3">
                 <Image
                   src={iconSrc}
-                  height={24}
-                  width={24}
-                  alt={"icon"}
-                  className="ml-2"
+                  height={20}
+                  width={20}
+                  alt="Field icon"
+                  className="transition-transform duration-200 group-hover:scale-110"
                 />
               </div>
             )}
 
             <Input
               id={`${name}-input`}
-              placeholder=" "
               {...field}
               disabled={disabled}
+              placeholder={label}
               className={cn(
-                "h-11 bg-transparent text-black placeholder:text-black/60 border-0 border-b-2 border-b-zink-700 rounded-none focus:border-0 focus:border-b-2 focus:border-b-black ring-0 focus:ring-0 focus:ring-offset-0 transition-all duration-200 focus:outline-none focus:border-none focus-visible:outline-none focus-visible:ring-0 peer",
-                Icon && "pl-10",
-                iconSrc && "pl-10",
+                "w-full px-4 py-3 bg-white dark:bg-gray-800 rounded-lg border-2 border-gray-200 dark:border-gray-700",
+                "text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500",
+                "transition-all duration-200 ease-in-out",
+                "hover:border-gray-300 dark:hover:border-gray-600",
+                "focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary dark:focus:border-primary",
+                "disabled:bg-gray-50 disabled:text-gray-500 disabled:border-gray-200 disabled:cursor-not-allowed",
+                Icon || iconSrc ? "pl-10" : "pl-4",
                 className
               )}
               onChange={(e) => {
@@ -91,13 +101,15 @@ export default function CustomInput<T extends FieldValues>({
                 onChange?.(e);
               }}
             />
+
             <FormLabel
               htmlFor={`${name}-input`}
               className={cn(
-                "absolute left-0 text-black/60   transform transition-all duration-200 cursor-text",
-                Icon || iconSrc ? "left-10" : "left-2",
-                "peer-placeholder-shown:text-md peer-placeholder-shown:-translate-y-7 peer-focus:-translate-y-[3.5rem] peer-focus:text-md peer-focus:text-black -translate-y-6",
-                "peer-[&:not(:placeholder-shown)]:hidden", // Hide label when input has value
+                "absolute -top-2 left-2 px-1 text-xs font-medium",
+                "bg-white dark:bg-gray-800",
+                "text-gray-600 dark:text-gray-400",
+                "transition-all duration-200",
+                "group-hover:text-primary",
                 labelClassName
               )}
             >
@@ -105,12 +117,13 @@ export default function CustomInput<T extends FieldValues>({
             </FormLabel>
           </div>
         </FormControl>
-      </div>
-      <FormMessage className="m-0 -mb-4 p-0 text-xs text-red-600">
-        {(error ?? fieldError?.message) && (
-          <span>{error ?? fieldError?.message}</span>
+
+        {(error || fieldError?.message) && (
+          <FormMessage className="mt-1.5 text-xs font-medium text-red-500 dark:text-red-400 animate-slideDown">
+            {error || fieldError?.message}
+          </FormMessage>
         )}
-      </FormMessage>
+      </div>
     </FormItem>
   );
 }

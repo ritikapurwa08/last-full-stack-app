@@ -59,6 +59,8 @@ const UserSignUp = () => {
       name: formValues.name,
       email: formValues.email,
       password: formValues.password,
+      customImage:
+        "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?q=80&w=1972&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       flow: "signUp",
     })
       .then(() => {
