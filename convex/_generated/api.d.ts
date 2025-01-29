@@ -14,7 +14,6 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as auth from "../auth.js";
-import type * as blogInteractions from "../blogInteractions.js";
 import type * as blogs from "../blogs.js";
 import type * as comments from "../comments.js";
 import type * as http from "../http.js";
@@ -30,7 +29,6 @@ import type * as users from "../users.js";
  */
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
-  blogInteractions: typeof blogInteractions;
   blogs: typeof blogs;
   comments: typeof comments;
   http: typeof http;

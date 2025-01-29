@@ -50,7 +50,7 @@ const UserSignUp = () => {
   const { signIn } = useAuthActions();
   const router = useRouter();
   const form = UseSignUpZodForm();
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(true);
   const [, setIsEmailAvailable] = useState(false);
   const handelUserSignIn = (formValues: SignUpZodType) => {
     setLoading(true);
@@ -87,7 +87,7 @@ const UserSignUp = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handelUserSignIn)}
-        className="space-y-6"
+        className="space-y-2"
       >
         <CustomInput
           control={form.control}
@@ -156,7 +156,7 @@ const UserSignIn = () => {
   const { signIn } = useAuthActions();
   const router = useRouter();
   const form = UseSignInZodForm();
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(true);
 
   const handleUserSignIn = (formValues: SignInZodType) => {
     setLoading(true);

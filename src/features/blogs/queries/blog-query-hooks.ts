@@ -13,14 +13,19 @@ type UsePaginatedBlogsResult = {
 };
 
 export const usePaginatedBlogs = (
-  queryName: "getPaginatedAllBlogs",
+  queryName:
+    | "getPaginatedUserBlogs"
+    | "getPaginatedSavedBlogs"
+    | "getPaginatedLikedBlogs"
+    | "getAllPaginatedBlogs",
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   queryArgs: Record<string, any> = {}, // Additional query arguments
   initialNumItems: number = 5
 ): UsePaginatedBlogsResult => {
   const { results, status, loadMore } = usePaginatedQuery(
     api.blogs[queryName],
-    queryArgs, // Pass queryArgs to the query
+    { userId: queryArgs.userId }, // Ensure userId is included in queryArgs
     { initialNumItems }
   );
 
@@ -74,7 +79,40 @@ export const usePaginatedComments = (
 export const useGetAllPaginatedBlogs = (
   initialNumItems: number = 5
 ): UsePaginatedBlogsResult => {
-  return usePaginatedBlogs("getPaginatedAllBlogs", {}, initialNumItems);
+  return usePaginatedBlogs("getAllPaginatedBlogs", {}, initialNumItems);
+};
+
+export const useGetPaginatedUserBlogs = (
+  initialNumItems: number = 5,
+  userId: Id<"users">
+): UsePaginatedBlogsResult => {
+  return usePaginatedBlogs(
+    "getPaginatedUserBlogs",
+    { userId },
+    initialNumItems
+  );
+};
+
+export const useGetPaginatedSavedBlogs = (
+  initialNumItems: number = 5,
+  userId: Id<"users">
+): UsePaginatedBlogsResult => {
+  return usePaginatedBlogs(
+    "getPaginatedSavedBlogs",
+    { userId },
+    initialNumItems
+  );
+};
+
+export const useGetPaginatedLikedBlogs = (
+  initialNumItems: number = 5,
+  userId: Id<"users">
+): UsePaginatedBlogsResult => {
+  return usePaginatedBlogs(
+    "getPaginatedLikedBlogs",
+    { userId },
+    initialNumItems
+  );
 };
 
 export const useIsAlreadyLikedBlog = (blogId: Id<"blogs">) => {

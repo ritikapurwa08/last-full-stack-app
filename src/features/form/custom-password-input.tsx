@@ -41,8 +41,6 @@ const CustomPasswordInput = <T extends FieldValues>({
   onChange,
   showPassword,
   icon: Icon,
-  iconClassName,
-  labelClassName,
 }: CustomPasswordInputProps<T>) => {
   const {
     field,
@@ -51,50 +49,47 @@ const CustomPasswordInput = <T extends FieldValues>({
 
   return (
     <FormItem className="relative flex flex-col gap-y-0.5">
-      <div className="relative">
-        <FormControl className="m-0 p-0">
-          <div className="relative">
-            {Icon && (
-              <div className="absolute flex justify-center items-center top-1/2 transform -translate-y-1/2 w-10">
-                <Icon
-                  size={24}
-                  className={cn("text-black/60", iconClassName)}
+      <FormControl className="m-0 p-0">
+        <div className="">
+          <div id="label-container">
+            <div id="label-input-container">
+              <FormLabel htmlFor={`${name}-input`} className="text-pink-400">
+                {label}
+              </FormLabel>
+            </div>
+
+            <div id="icon-input-container" className="relative">
+              <div id="icon-container">
+                {Icon && (
+                  <div className="absolute flex justify-center items-center top-1/2 transform -translate-y-1/2 w-10">
+                    <Icon className={cn("text-pink-400/60 size-5")} />
+                  </div>
+                )}
+              </div>
+
+              <div id="input-container">
+                <Input
+                  id={`${name}-input`}
+                  type={showPassword ? "text" : "password"}
+                  placeholder=" "
+                  {...field}
+                  disabled={disabled}
+                  className={cn(
+                    " border border-pink-400/30 placeholder:text-black text-black focus:border-pink-400/60 focus:border-2 autofill-bg-transparent ",
+                    Icon && "pl-10",
+                    className
+                  )}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    onChange?.(e);
+                  }}
                 />
               </div>
-            )}
-
-            <Input
-              id={`${name}-input`}
-              type={showPassword ? "text" : "password"}
-              placeholder=" "
-              {...field}
-              disabled={disabled}
-              className={cn(
-                "h-11 bg-transparent text-black [&:-webkit-autofill]:text-black [&:-webkit-autofill]:[background-color:transparent] [&:-webkit-autofill]:[-webkit-text-fill-color:black] placeholder:text-black/60 border-0 border-b-2 border-b-zink-700 rounded-none focus:border-0 focus:border-b-2 focus:border-b-black ring-0 focus:ring-0 focus:ring-offset-0 transition-all duration-200 focus:outline-none focus:border-none focus-visible:outline-none focus-visible:ring-0 peer",
-                Icon && "pl-10",
-                className
-              )}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                field.onChange(e);
-                onChange?.(e);
-              }}
-            />
-
-            <FormLabel
-              htmlFor={`${name}-input`}
-              className={cn(
-                "absolute left-0 text-black/60 transform transition-all duration-200 cursor-text",
-                Icon ? "left-10" : "left-2",
-                "peer-placeholder-shown:text-md peer-placeholder-shown:-translate-y-7 peer-focus:-translate-y-[3.5rem] peer-focus:text-md peer-focus:text-black -translate-y-6",
-                "peer-[&:not(:placeholder-shown)]:hidden",
-                labelClassName
-              )}
-            >
-              {label}
-            </FormLabel>
+            </div>
           </div>
-        </FormControl>
-      </div>
+        </div>
+      </FormControl>
+
       <FormMessage className="m-0 -mb-4 p-0 text-xs text-red-600">
         {(error || fieldError?.message) && (
           <span>{error || fieldError?.message}</span>

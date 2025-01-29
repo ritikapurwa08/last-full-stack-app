@@ -36,7 +36,7 @@ export const IsFollowingUserHook = ({
   userId: Id<"users">;
   targetUserId: Id<"users">;
 }) => {
-  const isFollowing = useQuery(api.blogInteractions.isFollowingUser, {
+  const isFollowing = useQuery(api.users.isFollwingUser, {
     userId,
     targetUserId,
   });
@@ -48,55 +48,23 @@ export const IsFollowingUserHook = ({
   };
 };
 
-export const GetUserAllFollowingNumberHook = ({
-  userId,
-}: {
-  userId: Id<"users">;
-}) => {
-  const allFollowingNumber = useQuery(
-    api.blogInteractions.getUserAllFollowing,
-    { userId }
-  );
-  const isLoading = allFollowingNumber === undefined;
-  return {
-    allFollowingNumber,
-    isLoading,
-  };
-};
-
-export const GetUserAllFollowersNumberHook = ({
-  userId,
-}: {
-  userId: Id<"users">;
-}) => {
-  const allFollowersNumber = useQuery(
-    api.blogInteractions.getUserAllFollowers,
-    { userId }
-  );
-  const isLoading = allFollowersNumber === undefined;
-  return {
-    allFollowersNumber,
-    isLoading,
-  };
-};
-
-type UsePaginatedBlogsResult = {
-  results: [];
+export type CustomUserFollowList = Doc<"users">;
+type UsePaginatedUserFollowList = {
+  results: CustomUserFollowList[];
   status: "CanLoadMore" | "LoadingFirstPage" | "LoadingMore" | "Exhausted";
   loadMore: (numItems: number) => void;
   isLoading: boolean;
   hasMore: boolean;
 };
-
-export const usePaginatedBlogs = (
-  queryName: "getPaginatedUserLikedBlogs",
+export const usePaginatedUsers = (
+  queryName: "getUserAllFollowersList" | "getUserAllFollowingList",
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   queryArgs: Record<string, any> = {}, // Additional query arguments
   initialNumItems: number = 5
-): UsePaginatedBlogsResult => {
+): UsePaginatedUserFollowList => {
   const { results, status, loadMore } = usePaginatedQuery(
-    api.blogInteractions[queryName],
-    { userId: queryArgs.userId }, // Pass queryArgs to the query
+    api.users[queryName],
+    { userId: queryArgs.userId }, // Changed from blogId to userId
     { initialNumItems }
   );
 
@@ -104,28 +72,32 @@ export const usePaginatedBlogs = (
   const hasMore = status === "CanLoadMore";
 
   return {
-    results: results as [],
+    results: results as CustomUserFollowList[],
     status,
     loadMore,
     isLoading,
     hasMore,
   };
 };
-export const useUserAllFollowersList = ({
-  userId,
-}: {
-  userId: Id<"users">;
-}) => {
-  const followersList = useQuery(api.users.getUserAllFollowersList, {
-    userId,
-    paginationOpts: {
-      numItems: 10,
-      cursor: null,
-    },
-  });
-  const isLoading = followersList === undefined;
-  return {
-    followersList,
-    isLoading,
-  };
+
+export const useGetUserAllFollowersList = (
+  userId: Id<"users">,
+  initialNumItems: number = 5
+) => {
+  return usePaginatedUsers(
+    "getUserAllFollowersList",
+    { userId },
+    initialNumItems
+  );
+};
+
+export const useGetUserAllFollowingList = (
+  userId: Id<"users">,
+  initialNumItems: number = 5
+) => {
+  return usePaginatedUsers(
+    "getUserAllFollowingList",
+    { userId },
+    initialNumItems
+  );
 };

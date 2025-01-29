@@ -22,10 +22,10 @@ import {
 } from "./blog-mutation-comps";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-
+import { Skeleton } from "@/components/ui/skeleton";
 type Blog = Doc<"blogs">;
 
-const BlogCard = ({ blog }: { blog: Blog }) => {
+export const BlogCard = ({ blog }: { blog: Blog }) => {
   const formattedDate = format(new Date(blog._creationTime), "MMMM do, yyyy");
   const router = useRouter();
   const handleUserProfile = (path: Id<"users">) => {
@@ -128,9 +128,74 @@ const BlogCard = ({ blog }: { blog: Blog }) => {
   );
 };
 
-export default BlogCard;
+export const LoadingBlogCard = () => {
+  return (
+    <Card className="overflow-hidden min-w-full">
+      {/* User Profile and Name */}
+      <div className="flex items-center p-4 border-b">
+        <Skeleton className="w-10 h-10 rounded-full" />
+        <div className="ml-3">
+          <Skeleton className="h-4 w-[100px]" />
+          <Skeleton className="h-3 w-[80px] mt-1" />
+        </div>
+      </div>
 
-const BlogList = ({ blogs }: { blogs: Blog[] }) => {
+      {/* Blog Image */}
+      <Skeleton className="w-full h-64" />
+
+      {/* Blog Content */}
+      <CardContent className="p-4">
+        <CardHeader className="px-0">
+          <CardTitle>
+            <Skeleton className="h-6 w-full" />
+          </CardTitle>
+          <CardDescription className="mt-2">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-full mt-2" />
+            <Skeleton className="h-4 w-3/4 mt-2" />
+          </CardDescription>
+        </CardHeader>
+
+        {/* Tags */}
+        <div className="flex flex-wrap gap-2 mt-4">
+          <Skeleton className="h-6 w-20 rounded-full" />
+          <Skeleton className="h-6 w-20 rounded-full" />
+          <Skeleton className="h-6 w-20 rounded-full" />
+        </div>
+      </CardContent>
+
+      {/* Action Buttons (Like, Comment, Save) */}
+      <CardFooter className="p-4 border-t">
+        <div className="flex items-center justify-between w-full">
+          <div className="flex flex-col items-center gap-4">
+            <Skeleton className="w-8 h-8 rounded-full" />
+            <Skeleton className="h-4 w-12" />
+          </div>
+          <div className="flex flex-col items-center gap-4">
+            <Skeleton className="w-8 h-8 rounded-full" />
+            <Skeleton className="h-4 w-12" />
+          </div>
+          <div className="flex flex-col items-center gap-4">
+            <Skeleton className="w-8 h-8 rounded-full" />
+            <Skeleton className="h-4 w-20" />
+          </div>
+        </div>
+      </CardFooter>
+
+      {/* Update and Remove Buttons */}
+      <div className="p-4 border-t">
+        <div className="flex items-center justify-end gap-2">
+          <Skeleton className="h-8 w-20 rounded-md" />
+          <Skeleton className="h-8 w-20 rounded-md" />
+        </div>
+      </div>
+    </Card>
+  );
+};
+
+export default LoadingBlogCard;
+
+export const BlogList = ({ blogs }: { blogs: Blog[] }) => {
   return (
     <div className="grid md:grid-cols-2 sm:grid-cols-1 lg:grid-cols-3  mx-auto w-full justify-center gap-4">
       {blogs.map((blog) => (

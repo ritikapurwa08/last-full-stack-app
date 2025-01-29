@@ -24,7 +24,7 @@ export const createComment = mutation({
       content,
       commentLikesCount: 0,
       isCommentEdited: false,
-      commentLikes: undefined,
+      commentLikes: [],
     });
     return commentId;
   },

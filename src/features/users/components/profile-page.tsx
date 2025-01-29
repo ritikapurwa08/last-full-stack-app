@@ -2,7 +2,15 @@
 
 import { Doc, Id } from "../../../../convex/_generated/dataModel";
 import { useCurrentUserHook, useUserById } from "../query/user-query-hooks";
-import { FollowButton, FollowingButton } from "./user-mutation-comps";
+import {
+  AddUserDetails,
+  FollowButton,
+  FollowerButton,
+  FollowingButton,
+  SettingDialog,
+  ShowPostSection,
+  ShowUserDetails,
+} from "./user-mutation-comps";
 import { UserImageDialog } from "@/features/other/image-upload-mutation";
 
 export const ProfilePage = ({ userId }: { userId: Id<"users"> }) => {
@@ -53,26 +61,37 @@ const UserProfile = ({
     _id,
     uploadedImageStorageId,
     name,
-
+    bio,
+    location,
+    instagram,
+    website,
     customImage,
-
+    followersCount,
+    followingCount,
     imagePreference,
     uploadedImageUrl,
+    showEmail,
+    showInstagram,
+    showWebsite,
+    showFollowers,
+    showFollowing,
+    showPosts,
+    showSavedPosts,
+    showLikedPosts,
+    showLocation,
+    showBio,
+    showJoinedAt,
+    showLastActive,
+    lastActive,
+    email,
+    _creationTime,
   } = user;
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
       <h1 className="text-2xl font-bold mb-4">Profile</h1>
       <div className="space-y-4">
-        <div>
-          <h2 className="font-semibold">Name</h2>
-          <p>{name}</p>
-        </div>
-        <div>
-          <FollowButton anotherUserId={_id} userId={currentUserId} />
-        </div>
-
-        <div>
+        <div className="flex flex-col justify-center w-fit px-2 space-y-2">
           <UserImageDialog
             customImage={customImage}
             userId={_id}
@@ -80,15 +99,67 @@ const UserProfile = ({
             uploadedImageStorageId={uploadedImageStorageId}
             imagePreference={imagePreference}
           />
+          <span className="text-center">{name}</span>
         </div>
-        <div>
+
+        <div className="flex flex-row space-x-4">
           <FollowButton anotherUserId={_id} userId={currentUserId} />
-        </div>
-        <div>
-          <FollowingButton userId={_id} />
+          <FollowingButton userId={_id} followingCount={followingCount} />
+          <FollowerButton userId={_id} followersCount={followersCount} />
         </div>
 
         {/* Add more user details as needed */}
+
+        <div>
+          <SettingDialog
+            userId={_id}
+            showEmail={showEmail}
+            showInstagram={showInstagram}
+            showWebsite={showWebsite}
+            showFollowers={showFollowers}
+            showFollowing={showFollowing}
+            showPosts={showPosts}
+            showSavedPosts={showSavedPosts}
+            showLikedPosts={showLikedPosts}
+            showLocation={showLocation}
+            showBio={showBio}
+            showJoinedAt={showJoinedAt}
+            showLastActive={showLastActive}
+          />
+        </div>
+
+        <div>
+          <AddUserDetails
+            userId={_id}
+            name={name}
+            bio={bio}
+            location={location}
+            instagram={instagram}
+            website={website}
+          />
+        </div>
+
+        <div>
+          <ShowUserDetails
+            userId={_id}
+            showEmail={showEmail}
+            showInstagram={showInstagram}
+            showWebsite={showWebsite}
+            showBio={showBio}
+            showJoinedAt={showJoinedAt}
+            showLastActive={showLastActive}
+            lastActive={lastActive}
+            email={email}
+            instagram={instagram}
+            website={website}
+            location={location}
+            bio={bio}
+            joinedAt={_creationTime}
+          />
+        </div>
+        <div>
+          <ShowPostSection userId={_id} />
+        </div>
       </div>
     </div>
   );

@@ -155,8 +155,8 @@ const CreateBlogForm = ({ setOpen }: CreateBlogFormProps) => {
       await mutate(
         {
           ...data,
-
-          // Consider making tags dynamic
+          customImage: data.customImage || "",
+          tags: data.tags || [],
         },
         {
           onSuccess: () => {

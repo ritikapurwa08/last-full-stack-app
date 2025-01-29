@@ -71,12 +71,12 @@ export const useUpdateUserHook = () => {
 };
 
 export const useFollowUserHook = () => {
-  const followUserMutation = useMutation(api.blogInteractions.followUser);
+  const followUserMutation = useMutation(api.users.followUser);
   return useMutationHook(followUserMutation);
 };
 
 export const useUnfollowUserHook = () => {
-  const unfollowUserMutation = useMutation(api.blogInteractions.unfollowUser);
+  const unfollowUserMutation = useMutation(api.users.unfollowUser);
   return useMutationHook(unfollowUserMutation);
 };
 
@@ -112,4 +112,16 @@ export const useUpdateImagePreferenceHook = () => {
     api.users.updateImagePreference
   );
   return useMutationHook(updateImagePreferenceMutation);
+};
+
+export const useAddUserDetailsHook = () => {
+  const addUserDetailsMutation = useMutation(api.users.AddUserDetails);
+  return useMutationHook(addUserDetailsMutation);
+};
+
+export const useUpdateUserPreferencesHook = () => {
+  const updateUserPreferencesMutation = useMutation(
+    api.users.UpdateUserPreferences
+  );
+  return useMutationHook(updateUserPreferencesMutation);
 };

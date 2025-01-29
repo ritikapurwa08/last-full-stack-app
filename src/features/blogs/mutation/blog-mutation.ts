@@ -86,7 +86,7 @@ export const useLikeBlogHook = () => {
 };
 
 export const useRemoveLikeBlogHook = () => {
-  const removeLikeBlog = useMutation(api.blogs.removeLikeBlog);
+  const removeLikeBlog = useMutation(api.blogs.unlikeBlog);
   return useMutationHook(removeLikeBlog);
 };
 
@@ -96,7 +96,7 @@ export const useSaveBlogHook = () => {
 };
 
 export const useRemoveSaveBlogHook = () => {
-  const removeSaveBlog = useMutation(api.blogs.removeSaveBlog);
+  const removeSaveBlog = useMutation(api.blogs.unsaveBlog);
   return useMutationHook(removeSaveBlog);
 };
 

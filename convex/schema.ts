@@ -4,8 +4,6 @@ import { v } from "convex/values";
 
 export default defineSchema({
   ...authTables,
-
-  // Core user information
   users: defineTable({
     name: v.string(),
     email: v.string(),
@@ -15,100 +13,72 @@ export default defineSchema({
     customImage: v.string(),
     uploadedImageStorageId: v.optional(v.id("_storage")),
     uploadedImageUrl: v.optional(v.string()),
-    role: v.optional(
-      v.union(v.literal("admin"), v.literal("user"), v.literal("member"))
-    ),
-    imagePreference: v.optional(
-      v.union(v.literal("custom"), v.literal("convex"))
-    ),
-    instagram: v.optional(v.string()),
-    website: v.optional(v.string()),
-    showEmail: v.optional(v.boolean()),
-    showInstagram: v.optional(v.boolean()),
-    showWebsite: v.optional(v.boolean()),
-    showFollowers: v.optional(v.boolean()),
-    showFollowing: v.optional(v.boolean()),
-    showPosts: v.optional(v.boolean()),
-    showSavedPosts: v.optional(v.boolean()),
-    showLikedPosts: v.optional(v.boolean()),
-    showLocation: v.optional(v.boolean()),
-    showBio: v.optional(v.boolean()),
-    showJoinedAt: v.optional(v.boolean()),
-    showLastActive: v.optional(v.boolean()),
-    messagePrivacy: v.optional(
-      v.union(v.literal("everyone"), v.literal("followers"), v.literal("none"))
+    role: v.union(v.literal("admin"), v.literal("user"), v.literal("member")),
+    imagePreference: v.union(v.literal("custom"), v.literal("convex")),
+    instagram: v.string(),
+    website: v.string(),
+    // Boolean fields grouped together for easy access
+    showEmail: v.boolean(),
+    showInstagram: v.boolean(),
+    showWebsite: v.boolean(),
+    showFollowers: v.boolean(),
+    showFollowing: v.boolean(),
+    showPosts: v.boolean(),
+    showSavedPosts: v.boolean(),
+    showLikedPosts: v.boolean(),
+    showLocation: v.boolean(),
+    showBio: v.boolean(),
+    showJoinedAt: v.boolean(),
+    showLastActive: v.boolean(),
+    // End of Boolean fields
+
+    followingUsers: v.array(v.id("users")),
+    followedUser: v.array(v.id("users")),
+    followersCount: v.number(),
+    followingCount: v.number(),
+
+    blogsCount: v.number(),
+    likedBlogsCount: v.number(),
+    savedBlogsCount: v.number(),
+    unreadMessages: v.number(),
+    lastActive: v.string(),
+    messagePrivacy: v.union(
+      v.literal("everyone"),
+      v.literal("followers"),
+      v.literal("none")
     ),
   })
     .index("by_email", ["email"])
     .index("by_name", ["name"])
-    .index("by_role", ["role"]),
-
-  // User statistics
-  userStats: defineTable({
-    userId: v.id("users"),
-    followingUsers: v.optional(v.array(v.id("users"))),
-    followedUser: v.optional(v.array(v.id("users"))),
-    followersCount: v.number(),
-    followingCount: v.number(),
-    postsCount: v.number(),
-    savedPostsCount: v.number(),
-    likedPostsCount: v.number(),
-    totalMessages: v.number(),
-    unreadMessages: v.number(),
-    lastActive: v.string(),
-  }).index("by_userId", ["userId"]),
-
-  // User preferences
-  userPreferences: defineTable({
-    userId: v.id("users"),
-    showFollowers: v.optional(v.boolean()),
-    showFollowing: v.optional(v.boolean()),
-    showPosts: v.optional(v.boolean()),
-    showSavedPosts: v.optional(v.boolean()),
-    showLikedPosts: v.optional(v.boolean()),
-    showEmail: v.optional(v.boolean()),
-    showLocation: v.optional(v.boolean()),
-    showBio: v.optional(v.boolean()),
-    showJoinedAt: v.optional(v.boolean()),
-    showLastActive: v.optional(v.boolean()),
-    messagePrivacy: v.optional(
-      v.union(v.literal("everyone"), v.literal("followers"), v.literal("none"))
-    ),
-  }).index("by_userId", ["userId"]),
+    .index("by_role", ["role"])
+    .index("by_lastActive", ["lastActive"])
+    .index("by_followersCount", ["followersCount"])
+    .index("by_followingCount", ["followingCount"])
+    .index("by_blogsCount", ["blogsCount"])
+    .searchIndex("search_users", {
+      searchField: "name",
+      filterFields: ["email", "role", "location"],
+    }),
 
   blogs: defineTable({
     userId: v.id("users"),
     title: v.string(),
     content: v.string(),
-    customImage: v.optional(v.string()),
+    customImage: v.string(),
     uploadedImage: v.optional(v.string()),
     uploadedImageStorageId: v.optional(v.id("_storage")),
     updatedAt: v.optional(v.number()),
-    likes: v.optional(v.array(v.id("users"))),
-    saved: v.optional(v.array(v.id("users"))),
-    comments: v.optional(v.array(v.id("comments"))),
+    likedBy: v.array(v.id("users")),
+    savedBy: v.array(v.id("users")),
+    comments: v.array(v.id("comments")),
     likesCount: v.number(),
     commentsCount: v.number(),
     savedCount: v.number(),
-    tags: v.optional(v.array(v.string())),
+    isOwner: v.boolean(),
+    tags: v.array(v.string()),
   })
     .index("by_userId", ["userId"])
     .index("by_updatedAt", ["updatedAt"]),
-
-  // Blog interactions (likes, saves)
-  blogInteractions: defineTable({
-    userId: v.id("users"),
-    blogId: v.id("blogs"),
-    likes: v.array(v.id("users")),
-    saved: v.array(v.id("users")),
-    type: v.string(), // "save" or "like"
-    createdAt: v.number(),
-  })
-    .index("by_userId", ["userId"])
-    .index("by_blogId", ["blogId"])
-    .index("by_both", ["userId", "blogId"])
-    .index("likedBy", ["likes"])
-    .index("savedBy", ["saved"]),
 
   // Blog comments
   comments: defineTable({
@@ -117,9 +87,8 @@ export default defineSchema({
     content: v.string(),
     updatedAt: v.optional(v.number()),
     parentCommentId: v.optional(v.id("comments")), // For nested comments
-    commentLikes: v.optional(v.array(v.id("users"))),
+    commentLikes: v.array(v.id("users")),
     commentLikesCount: v.number(),
-
     isCommentEdited: v.boolean(),
   })
     .index("by_blogId", ["blogId"])

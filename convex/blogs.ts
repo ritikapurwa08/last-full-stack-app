@@ -7,8 +7,8 @@ export const createBlog = mutation({
   args: {
     title: v.string(),
     content: v.string(),
-    customImage: v.optional(v.string()),
-    tags: v.optional(v.array(v.string())),
+    customImage: v.string(),
+    tags: v.array(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -26,6 +26,10 @@ export const createBlog = mutation({
       commentsCount: 0,
       customImage: args.customImage,
       tags: args.tags,
+      isOwner: true,
+      likedBy: [],
+      savedBy: [],
+      comments: [],
     });
 
     return blogId;
@@ -88,7 +92,175 @@ export const removeBlog = mutation({
   },
 });
 
-export const getPaginatedAllBlogs = query({
+export const isAlreadyLikedBlog = query({
+  args: {
+    blogId: v.id("blogs"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new Error(
+        "Unauthorized: User must be logged in to check like status."
+      );
+    }
+
+    const blog = await ctx.db.get(args.blogId);
+    if (!blog) {
+      throw new Error("Blog not found.");
+    }
+
+    return blog.likedBy.includes(userId);
+  },
+});
+
+export const isAlreadySavedBlog = query({
+  args: {
+    blogId: v.id("blogs"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new Error(
+        "Unauthorized: User must be logged in to check save status."
+      );
+    }
+
+    const blog = await ctx.db.get(args.blogId);
+    if (!blog) {
+      throw new Error("Blog not found.");
+    }
+
+    return blog.savedBy.includes(userId);
+  },
+});
+
+export const likeBlog = mutation({
+  args: {
+    blogId: v.id("blogs"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new Error("Unauthorized: User must be logged in to like a blog.");
+    }
+
+    const blog = await ctx.db.get(args.blogId);
+    if (!blog) {
+      throw new Error("Blog not found.");
+    }
+
+    // Check if the user has already liked the blog
+    if (blog.likedBy.includes(userId)) {
+      throw new Error("User has already liked this blog.");
+    }
+
+    // Add the user to the likedBy array and increment likesCount
+    await ctx.db.patch(args.blogId, {
+      likedBy: [...blog.likedBy, userId],
+      likesCount: blog.likesCount + 1,
+    });
+
+    return args.blogId;
+  },
+});
+
+export const unlikeBlog = mutation({
+  args: {
+    blogId: v.id("blogs"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new Error("Unauthorized: User must be logged in to unlike a blog.");
+    }
+
+    const blog = await ctx.db.get(args.blogId);
+    if (!blog) {
+      throw new Error("Blog not found.");
+    }
+
+    // Check if the user has not liked the blog
+    if (!blog.likedBy.includes(userId)) {
+      throw new Error("User has not liked this blog.");
+    }
+
+    // Remove the user from the likedBy array and decrement likesCount
+    await ctx.db.patch(args.blogId, {
+      likedBy: blog.likedBy.filter((id) => id !== userId),
+      likesCount: blog.likesCount - 1,
+    });
+
+    return args.blogId;
+  },
+});
+
+export const saveBlog = mutation({
+  args: {
+    blogId: v.id("blogs"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new Error("Unauthorized: User must be logged in to save a blog.");
+    }
+
+    const blog = await ctx.db.get(args.blogId);
+    if (!blog) {
+      throw new Error("Blog not found.");
+    }
+
+    // Check if the user has already saved the blog
+    if (blog.savedBy.includes(userId)) {
+      throw new Error("User has already saved this blog.");
+    }
+
+    // Add the user to the savedBy array and increment savedCount
+    await ctx.db.patch(args.blogId, {
+      savedBy: [...blog.savedBy, userId],
+      savedCount: blog.savedCount + 1,
+    });
+
+    return args.blogId;
+  },
+});
+
+export const unsaveBlog = mutation({
+  args: {
+    blogId: v.id("blogs"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      throw new Error("Unauthorized: User must be logged in to unsave a blog.");
+    }
+
+    const blog = await ctx.db.get(args.blogId);
+    if (!blog) {
+      throw new Error("Blog not found.");
+    }
+
+    // Check if the user has not saved the blog
+    if (!blog.savedBy.includes(userId)) {
+      throw new Error("User has not saved this blog.");
+    }
+
+    // Remove the user from the savedBy array and decrement savedCount
+    await ctx.db.patch(args.blogId, {
+      savedBy: blog.savedBy.filter((id) => id !== userId),
+      savedCount: blog.savedCount - 1,
+    });
+
+    return args.blogId;
+  },
+});
+
+export const getAllPaginatedBlogs = query({
   args: {
     paginationOpts: paginationOptsValidator,
   },
@@ -101,120 +273,52 @@ export const getPaginatedAllBlogs = query({
   },
 });
 
-export const likeBlog = mutation({
+export const getPaginatedUserBlogs = query({
   args: {
-    blogId: v.id("blogs"),
+    userId: v.id("users"),
+    paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Unauthorized");
-    }
-    const blog = await ctx.db.get(args.blogId);
-    if (!blog) {
-      throw new Error("Blog not found");
-    }
-    const blogId = await ctx.db.patch(args.blogId, {
-      likesCount: blog.likesCount + 1,
-      likes: blog.likes ? [...blog.likes, userId] : [userId],
-    });
-    return blogId;
+    const userBlogs = await ctx.db
+      .query("blogs")
+      .filter((q) => q.eq(q.field("userId"), args.userId)) // Filter by userId
+      .order("desc")
+      .paginate(args.paginationOpts);
+
+    return userBlogs;
   },
 });
 
-export const saveBlog = mutation({
+// Get paginated blogs saved by a user
+export const getPaginatedSavedBlogs = query({
   args: {
-    blogId: v.id("blogs"),
+    userId: v.id("users"),
+    paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Unauthorized");
-    }
-    const blog = await ctx.db.get(args.blogId);
-    if (!blog) {
-      throw new Error("Blog not found");
-    }
-    const blogId = await ctx.db.patch(args.blogId, {
-      savedCount: blog.savedCount + 1,
-      saved: blog.saved ? [...blog.saved, userId] : [userId],
-    });
-    return blogId;
+    const savedBlogs = await ctx.db
+      .query("blogs")
+      .filter((q) => q.eq(q.field("savedBy"), [args.userId])) // Filter by savedBy array
+      .order("desc")
+      .paginate(args.paginationOpts);
+
+    return savedBlogs;
   },
 });
 
-export const removeSaveBlog = mutation({
+// Get paginated blogs liked by a user
+export const getPaginatedLikedBlogs = query({
   args: {
-    blogId: v.id("blogs"),
+    userId: v.id("users"),
+    paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Unauthorized");
-    }
-    const blog = await ctx.db.get(args.blogId);
-    if (!blog) {
-      throw new Error("Blog not found");
-    }
-    const blogId = await ctx.db.patch(args.blogId, {
-      savedCount: blog.savedCount - 1,
-      saved: blog.saved ? blog.saved.filter((id) => id !== userId) : [],
-    });
-    return blogId;
-  },
-});
+    const likedBlogs = await ctx.db
+      .query("blogs")
+      .filter((q) => q.eq(q.field("likedBy"), [args.userId])) // Filter by likedBy array
+      .order("desc")
+      .paginate(args.paginationOpts);
 
-export const removeLikeBlog = mutation({
-  args: {
-    blogId: v.id("blogs"),
-  },
-  handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Unauthorized");
-    }
-    const blog = await ctx.db.get(args.blogId);
-    if (!blog) {
-      throw new Error("Blog not found");
-    }
-    const blogId = await ctx.db.patch(args.blogId, {
-      likesCount: blog.likesCount - 1,
-      likes: blog.likes ? blog.likes.filter((id) => id !== userId) : [],
-    });
-    return blogId;
-  },
-});
-
-export const isAlreadyLikedBlog = query({
-  args: {
-    blogId: v.id("blogs"),
-  },
-  handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Unauthorized");
-    }
-    const blog = await ctx.db.get(args.blogId);
-    if (!blog) {
-      throw new Error("Blog not found");
-    }
-    return blog.likes ? blog.likes.includes(userId) : false;
-  },
-});
-
-export const isAlreadySavedBlog = query({
-  args: {
-    blogId: v.id("blogs"),
-  },
-  handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) {
-      throw new Error("Unauthorized");
-    }
-    const blog = await ctx.db.get(args.blogId);
-    if (!blog) {
-      throw new Error("Blog not found");
-    }
-    return blog.saved ? blog.saved.includes(userId) : false;
+    return likedBlogs;
   },
 });

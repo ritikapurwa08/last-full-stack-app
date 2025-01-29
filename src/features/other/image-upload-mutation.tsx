@@ -198,7 +198,7 @@ export const UserImageDialog = ({
   const handleImageSelect = useCallback(
     (image: UnsplashImage) => {
       updateCustomImage(
-        { customImage: image.url },
+        { customImage: image.url, userId: userId },
         {
           onSuccess() {
             toast({
@@ -216,7 +216,7 @@ export const UserImageDialog = ({
         }
       );
     },
-    [updateCustomImage, toast]
+    [updateCustomImage, toast, userId]
   );
 
   const handleRemoveCustomImage = useCallback(() => {

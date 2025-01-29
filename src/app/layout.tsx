@@ -51,7 +51,7 @@ export default function RootLayout({
             geistMono.variable,
             roboto.variable,
             firaCode.variable,
-            "antialiased"
+            "antialiased "
           )}
         >
           <ConvexClientProvider>

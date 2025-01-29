@@ -79,3 +79,17 @@ body {
  
 }
 
+.autofill-bg-transparent:-webkit-autofill,
+.autofill-bg-transparent:-webkit-autofill:hover,
+.autofill-bg-transparent:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px #fff inset; /* "Covers up" autofill color */
+  -webkit-text-fill-color: #000; } /* Ensures text color is
+
+/* For Firefox (if needed) */
+.autofill-bg-transparent:-moz-autofill,
+.autofill-bg-transparent:-moz-autofill:hover,
+.autofill-bg-transparent:-moz-autofill:focus {
+  -moz-box-shadow: 0 0 0px 1000px #fff inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
